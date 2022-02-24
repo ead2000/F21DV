@@ -1,0 +1,1239 @@
+<!-- come back to task 13,16 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab 1</title>
+    <style>
+      #task14 svg text {
+        fill: purple;
+        font: 10px sans-serif;
+        text-anchor: end;
+      }
+      #task21 svg {
+        /* padding: 20px; */
+      }
+    </style>
+  </head>
+  <body>
+    <p>Task 2</p>
+    <p>Second paragraph</p>
+
+    <div></div>
+    <h2>Task 6</h2>
+    <div class="task6"></div>
+    <div class="task6"></div>
+    <div class="task6"></div>
+
+    <h2>Task 7</h2>
+    <div class="task7"></div>
+    <div class="task7"></div>
+    <div class="task7"></div>
+
+    <h2>Task 8</h2>
+    <div id="task8"></div>
+
+    <h2>Task 10 - Heart Failure</h2>
+    <div id="task10"></div>
+
+    <h2>Task 11</h2>
+    <div id="task11"></div>
+    <h2>Task 12</h2>
+    <div id="task12"></div>
+    <h2>Task 14 and 15</h2>
+    <div id="task14"></div>
+    <h2>Task 16</h2>
+    <div id="task16"></div>
+    <h2>Task 17</h2>
+    <div id="task17"></div>
+    <h2>Task 18 and 19</h2>
+    <div id="task18"></div>
+    <h2>Task 20</h2>
+    <div id="task20"></div>
+    <h2>Task 21</h2>
+    <div id="task21"></div>
+    <h2>Task 24 and 25</h2>
+    <div id="task24"></div>
+    <h2>Task 26</h2>
+    <div id="task26"></div>
+
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script>
+      // Note: Run on a live server
+      const data = {
+        name: "A",
+        size: 1,
+        children: [
+          { name: "B", size: 2 },
+          {
+            name: "C",
+            size: 3,
+            children: [
+              { name: "E", size: 5 },
+              { name: "F", size: 6 },
+            ],
+          },
+          {
+            name: "D",
+            size: 4,
+            children: [
+              { name: "G", size: 2 },
+              {
+                name: "H",
+                size: 3,
+                children: [
+                  { name: "J", size: 5 },
+                  { name: "K", size: 6 },
+                ],
+              },
+              { name: "I", size: 4 },
+            ],
+          },
+        ],
+      };
+
+      const printHierarchy = (data) => {
+        // build hierarchy
+        const root = d3.hierarchy(data);
+
+        // how many elements are in the hierarchy
+        const count = root.descendants().length;
+        console.log("count:", count);
+
+        // node.each traverses the tree from that node, repeatedly calling a function on each descendant node.
+        root.each((d) => {
+          console.log("depth:", d.depth, " name:", d.data.name);
+        });
+      };
+
+      const readDataFromJson = async (path) => {
+        return d3.json(path, function (data) {
+          return data;
+        });
+      };
+
+      const isDataValid = (data) => {
+        if (typeof data !== "object") return false;
+        return Object.keys(data).length > 1;
+      };
+
+      // display d3 version
+      const task1 = () => {
+        console.log("d3.version:", d3.version);
+      };
+
+      // change style of paragraph
+      const task2 = () => {
+        d3.select("p")
+          .style("font-size", "20px")
+          .style("line-height", "30px")
+          .style("font-family", "sans-serif");
+      };
+
+      const task3 = () => {
+        const body = d3.select("body");
+
+        // create 10 div elements inside body element
+        for (let i = 0; i < 10; i++) {
+          const newSpan = body.append("div");
+          newSpan.text(`${i + 1}`);
+
+          // set first 5 elements color to red and last 5 to green
+          if (i < 5) {
+            newSpan.style("color", "red");
+          } else {
+            newSpan.style("color", "green");
+          }
+        }
+      };
+
+      const task4 = () => {
+        const divElement = d3.select("div");
+        divElement.text("start").style("color", "purple");
+      };
+
+      const task5 = () => {
+        const bodyElement = d3.select("body");
+        const div = bodyElement.append("div");
+        div.text("Hello World!");
+        // same as
+        d3.select("body")
+          .append("div")
+          .text("Hello World!")
+          .style("color", "green");
+      };
+
+      const task6 = () => {
+        const otherData = [
+          { name: "test", val: 1, color: "red" },
+          { name: "other", val: 2, color: "green" },
+          { name: "b", val: 3, color: "purple" },
+        ];
+
+        const bodyElement = d3
+          .selectAll(".task6")
+          .data(otherData)
+          .text(function (obj, index) {
+            console.log("d.name: " + obj.name);
+            console.log("d.val: " + obj.val);
+            console.log("i: " + index);
+            console.log("this: " + this);
+            return obj.color; // return value is used to set the 'text'
+          });
+      };
+
+      const task7 = () => {
+        const num = [10, 50, 100, 200];
+        const paragraph = d3
+          .select("body")
+          .selectAll(".task7")
+          .data(num)
+          .text(function (data, index) {
+            return "cont:" + data; // return value is used to set the 'text'
+          })
+          .style("color", function (data, index) {
+            if (data >= 50 && data <= 100) {
+              return "red";
+            } else {
+              return "yellow";
+            }
+            return "blue";
+          });
+      };
+
+      const task8 = () => {
+        var myData = ["a", 4, 1, "b", 6, 2, 8, 9, "z"];
+        var p = d3
+          .select("#task8")
+          .selectAll("span")
+          .data(myData)
+          .enter() //checks for <span> elements corresponding to your elements. Since it does not find any, it will call this for each ‘span’ that needs to be created
+          .append("span")
+          .text(function (d, i) {
+            console.log(d);
+            return d;
+          })
+          .style("color", (data, index) => {
+            if (typeof data === "string") {
+              return "blue";
+            } else if (typeof data === "number") {
+              return "green";
+            }
+            // return "yellow";
+          });
+      };
+
+      const task9 = async () => {
+        const count = { mr: 0, mrs: 0, miss: 0, female: 0, male: 0 };
+
+        const setNameCount = (data) => {
+          // check number of mr
+          if (data.Name.toLowerCase().includes("mrs")) {
+            count.mrs = count.mrs + 1;
+          }
+          // check number of mr
+          else if (data.Name.toLowerCase().includes("mr")) {
+            console.log("mr");
+            count.mr = count.mr + 1;
+          }
+          // check number of mr
+          else if (data.Name.toLowerCase().includes("miss")) {
+            count.miss = count.miss + 1;
+          }
+        };
+
+        const setSexCount = (data) => {
+          // check number of female
+          if (data.Sex.toLowerCase() === "female") {
+            count.female = count.female + 1;
+          }
+          // check number of male
+          if (data.Sex.toLowerCase() === "male") {
+            count.male = count.male + 1;
+          }
+        };
+
+        let titaniccsv =
+          "https://raw.githubusercontent.com/dsindy/kaggle-titanic/master/data/test.csv"; /*
+                    PassengerId,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked
+                    892,3,"Kelly, Mr. James",male,34.5,0,0,330911,7.8292,,Q
+                    893,3,"Wilkes, Mrs. James (Ellen Needs)",female,47,1,0,363272,7,,S
+                    894,2,"Myles, Mr. Thomas Francis",male,62,0,0,240276,9.6875,,Q
+                    895,3,"Wirz, Mr. Albert",male,27,0,0,315154,8.6625,,S
+                    */
+        await d3.csv(titaniccsv, function (data) {
+          setNameCount(data);
+          setSexCount(data);
+        });
+
+        console.table(count);
+      };
+
+      const task10 = async () => {
+        const processData = [];
+        const processedObj = {};
+
+        const prepareData = (data) => {
+          if (+data.age >= 1 && +data.age <= 30) {
+            if (processedObj["1-30"] > 0) {
+              processedObj["1-30"] = processData["1-30"] + 1;
+            } else {
+              processedObj["1-30"] = 1;
+            }
+          } else if (+data.age >= 31 && +data.age <= 40) {
+            if (processedObj["31-40"] > 0) {
+              processedObj["31-40"] = processedObj["31-40"] + 1;
+            } else {
+              processedObj["31-40"] = 1;
+            }
+          } else if (+data.age >= 41 && +data.age <= 60) {
+            if (processedObj["41-60"] > 0) {
+              processedObj["41-60"] = processedObj["41-60"] + 1;
+            } else {
+              processedObj["41-60"] = 1;
+            }
+          } else if (+data.age >= 61 && +data.age <= 100) {
+            if (processedObj["61-100"] > 0) {
+              processedObj["61-100"] = processedObj["61-100"] + 1;
+            } else {
+              processedObj["61-100"] = 1;
+            }
+          }
+          return processedObj;
+        };
+
+        const buildArrayFromPreparedData = (data) => {
+          const result = [];
+          const keys = Object.keys(data);
+
+          for (let i = 0; i < keys.length; i++) {
+            const obj = { age: keys[i], val: data[keys[i]] };
+            result.push(obj);
+          }
+          return result;
+        };
+
+        let heartfailurecsv =
+          "https://raw.githubusercontent.com/akmand/datasets/master/heart_failure.csv"; /*
+                    age,anaemia,creatinine_phosphokinase,diabetes,ejection_fraction,high_blood_pressure,platelets,serum_creatini ne,serum_sodium,sex,smoking,time,DEATH_EVENT
+                    75,0,582,0,20,1,265000,1.9,130,1,0,4,1
+                    55,0,7861,0,38,0,263358.03,1.1,136,1,0,6,165,0,146,0,20,0,162000,1.3,129,1,1,7,1
+              50,1,111,0,20,0,210000,1.9,137,1,0,7,1
+              */
+
+        await d3.csv(heartfailurecsv, function (data) {
+          prepareData(data);
+        });
+        const d3Array = buildArrayFromPreparedData(processedObj);
+
+        var p = d3
+          .select("#task10")
+          .selectAll("p")
+          .data(d3Array)
+          .enter() //checks for <span> elements corresponding to your elements. Since it does not find any, it will call this for each ‘span’ that needs to be created
+          .append("p")
+          .text(function (d, i) {
+            console.log(d);
+            return `Age ${d.age}: ${d.val}`;
+          });
+        console.log(processedObj);
+      };
+
+      const task11 = () => {
+        var svg = d3
+          .select("#task11")
+          .append("svg")
+          .attr("width", 400)
+          .attr("height", 400)
+          .style("border", "1px solid green");
+        //Create line element inside SVG
+        svg
+          .append("line")
+          .attr("x1", 100)
+          .attr("x2", 200)
+          .attr("y1", 50)
+          .attr("y2", 50)
+          .attr("stroke", "blue");
+        svg
+          .append("line")
+          .attr("x1", 200)
+          .attr("x2", 200)
+          .attr("y1", 150)
+          .attr("y2", 50)
+          .attr("stroke", "green");
+        svg
+          .append("line")
+          .attr("x1", 100)
+          .attr("x2", 200)
+          .attr("y1", 150)
+          .attr("y2", 150)
+          .attr("stroke", "red");
+        svg
+          .append("line")
+          .attr("x1", 100)
+          .attr("x2", 100)
+          .attr("y1", 50)
+          .attr("y2", 150)
+          .attr("stroke", "yellow");
+      };
+
+      const task12 = async () => {
+        var svg = d3
+          .select("#task12")
+          .append("svg")
+          .attr("width", 400)
+          .attr("height", 400)
+          .style("border", "1px solid green");
+
+        const data = await d3.csv("../data/task12.csv", function (data) {
+          console.log(data);
+          if (data.shape === "circle") {
+            svg
+              .append("circle")
+              .attr("cx", data.cx)
+              .attr("cy", data.cy)
+              .attr("r", data.r);
+          } else if (data.shape === "rect") {
+            svg
+              .append("rect")
+              .attr("x", data.x)
+              .attr("y", data.y)
+              .attr("width", data.width)
+              .attr("height", data.height)
+              .attr("fill", "pink");
+          }
+        });
+      };
+
+      const task13 = async () => {
+        var svg = d3
+          .select("#task12")
+          .append("svg")
+          .attr("width", 400)
+          .attr("height", 400)
+          .style("border", "1px solid green");
+
+        const data = await d3.csv("../data/task12.csv", function (data) {
+          svg
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("", (data, index) => {
+              if (typeof data === "string") {
+                return "blue";
+              } else if (typeof data === "number") {
+                return "green";
+              }
+              // return "yellow";
+            });
+          if (data.shape === "circle") {
+            svg
+              .append("circle")
+              .attr("cx", data.cx)
+              .attr("cy", data.cy)
+              .attr("r", data.r);
+          } else if (data.shape === "rect") {
+            svg
+              .append("rect")
+              .attr("x", data.x)
+              .attr("y", data.y)
+              .attr("width", data.width)
+              .attr("height", data.height)
+              .attr("fill", "pink");
+          }
+        });
+      };
+
+      // also contains task 15(change colors)
+      const task14 = async () => {
+        const processData = [];
+        const processedObj = {};
+
+        const prepareData = (data) => {
+          if (+data.age >= 1 && +data.age <= 30) {
+            if (processedObj["1-30"] > 0) {
+              processedObj["1-30"] = processData["1-30"] + 1;
+            } else {
+              processedObj["1-30"] = 1;
+            }
+          } else if (+data.age >= 31 && +data.age <= 40) {
+            if (processedObj["31-40"] > 0) {
+              processedObj["31-40"] = processedObj["31-40"] + 1;
+            } else {
+              processedObj["31-40"] = 1;
+            }
+          } else if (+data.age >= 41 && +data.age <= 60) {
+            if (processedObj["41-60"] > 0) {
+              processedObj["41-60"] = processedObj["41-60"] + 1;
+            } else {
+              processedObj["41-60"] = 1;
+            }
+          } else if (+data.age >= 61 && +data.age <= 100) {
+            if (processedObj["61-100"] > 0) {
+              processedObj["61-100"] = processedObj["61-100"] + 1;
+            } else {
+              processedObj["61-100"] = 1;
+            }
+          }
+          return processedObj;
+        };
+
+        const buildArrayFromPreparedData = (data) => {
+          const result = [];
+          const keys = Object.keys(data);
+
+          for (let i = 0; i < keys.length; i++) {
+            const obj = { age: keys[i], val: data[keys[i]] };
+            result.push(obj);
+          }
+          return result;
+        };
+
+        let heartfailurecsv =
+          "https://raw.githubusercontent.com/akmand/datasets/master/heart_failure.csv"; /*
+                    age,anaemia,creatinine_phosphokinase,diabetes,ejection_fraction,high_blood_pressure,platelets,serum_creatini ne,serum_sodium,sex,smoking,time,DEATH_EVENT
+                    75,0,582,0,20,1,265000,1.9,130,1,0,4,1
+                    55,0,7861,0,38,0,263358.03,1.1,136,1,0,6,165,0,146,0,20,0,162000,1.3,129,1,1,7,1
+              50,1,111,0,20,0,210000,1.9,137,1,0,7,1
+              */
+
+        await d3.csv(heartfailurecsv, function (data) {
+          prepareData(data);
+        });
+        const d3Array = buildArrayFromPreparedData(processedObj);
+
+        var data = [5, 10, 12, 6];
+        var width = 500;
+        var scaleFactor = 3;
+        var barHeight = 20;
+
+        var graph = d3
+          .select("#task14")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", barHeight * d3Array.length);
+        var bar = graph
+          .selectAll("g")
+          .data(d3Array)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            return "translate(0," + i * barHeight + ")";
+          });
+        bar
+          .append("rect")
+          .attr("width", function (d) {
+            return d.val * scaleFactor;
+          })
+          .attr("height", barHeight - 1)
+          .attr("fill", function (d) {
+            // task 15
+            if (d.val > 130) {
+              return "red";
+            } else {
+              return "blue";
+            }
+          });
+        bar
+          .append("text")
+          .attr("x", function (d) {
+            return d.val * scaleFactor;
+          })
+          .attr("y", barHeight / 2)
+          .attr("dy", ".35em")
+          .text(function (d) {
+            return d.age;
+          });
+      };
+
+      const task16 = () => {
+        const width = 500;
+        const height = 500;
+        const data = [10, 15, 20, 25, 30];
+        // Note different valid ways of specifying color
+        const colors = ["#ffffcc", "red", "rgb(0,255,0)", "#31a354", "#006837"];
+        const svg = d3
+          .select("#task16")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+        const g = svg
+          .selectAll("g")
+          .data(data)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            return "translate(0,0)";
+          });
+        g.append("circle")
+          .attr("cx", function (d, i) {
+            return i * 100 + 50;
+          })
+          .attr("cy", function (d, i) {
+            return 100;
+          })
+          .attr("r", function (d) {
+            return d * 1.5;
+          })
+          .attr("fill", function (d, i) {
+            return colors[i];
+          });
+        g.append("text")
+          .attr("x", function (d, i) {
+            return i * 100 + 40;
+          })
+          .attr("y", 105)
+          .attr("stroke", "teal")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .text(function (d) {
+            return d;
+          });
+        g.append("rect")
+          .attr("width", function (d) {
+            return d * 10;
+          })
+          .attr("height", function (d) {
+            return d * 10;
+          })
+          .attr("fill", function (d, i) {
+            return colors[i];
+          });
+        g.append("text")
+          .attr("x", function (d, i) {
+            return i * 100 + 40;
+          })
+          .attr("y", 105)
+          .attr("stroke", "teal")
+          .attr("font-size", "12px")
+          .attr("font-family", "sans-serif")
+          .text(function (d) {
+            return d;
+          });
+      };
+
+      const task17 = () => {
+        const data = [50, 400, 300, 900, 250, 1000];
+        const width = 500;
+        const barHeight = 20;
+        const margin = 1;
+        var scale = d3.scaleLinear();
+        var scale = d3
+          .scaleLinear()
+          .domain([d3.min(data), d3.max(data)])
+          .range([50, 500]);
+        var svg = d3
+          .select("#task17")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", barHeight * data.length);
+        var g = svg
+          .selectAll("g")
+          .data(data)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            return "translate(0," + i * barHeight + ")";
+          });
+        g.append("rect")
+          .attr("width", function (d) {
+            return scale(d);
+          })
+          .attr("fill", function (d) {
+            if (d < 100) {
+              return "green";
+            } else if (d > 500) {
+              return "red";
+            }
+            return "blue";
+          })
+          .attr("height", barHeight - margin);
+        g.append("text")
+          .attr("x", function (d) {
+            return scale(d);
+          })
+          .attr("y", barHeight / 2)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function (d) {
+            return d;
+          });
+      };
+
+      // task 18 and 19 and 21
+      const task18 = async (path) => {
+        const processData = [];
+        await d3.csv(path, function (data) {
+          processData.push(data);
+        });
+
+        const width = 500;
+        const barHeight = 20;
+        const margin = 1;
+        var scale = d3
+          .scaleLinear()
+          .domain([
+            d3.min(processData, (d) => d.age),
+            d3.max(processData, (d) => d.age),
+          ])
+          .range([50, 500]);
+        var svg = d3
+          .select("#task18")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", barHeight * processData.length);
+        var g = svg
+          .selectAll("g")
+          .data(processData)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            return "translate(0," + i * barHeight + ")";
+          });
+        g.append("rect")
+          .attr("width", function (d) {
+            return scale(d.age);
+          })
+          .attr("fill", function (d) {
+            if (d.age < 25) {
+              return "green";
+            } else if (d.age > 40) {
+              return "red";
+            }
+            return "blue";
+          })
+          .attr("height", barHeight - margin);
+        g.append("text")
+          .attr("x", function (d) {
+            return scale(d.age);
+          })
+          .attr("y", barHeight / 2)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function (d) {
+            return d.age;
+          });
+      };
+
+      const task20 = () => {
+        const width = 400;
+        const height = 300;
+        var data = [10, 15, 20, 25, 30];
+        var svg = d3
+          .select("#task20")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+        var xscale = d3
+          .scaleLinear()
+          .domain([0, d3.max(data)])
+          .range([0, width - 100]);
+        var yscale = d3
+          .scaleLinear()
+          .domain([0, d3.max(data)])
+          .range([height / 2, 0]);
+        var x_axis = d3.axisBottom().scale(xscale);
+        var y_axis = d3.axisLeft().scale(yscale);
+        var cx_axis = d3.axisTop().scale(xscale);
+        var cy_axis = d3.axisRight().scale(yscale);
+        svg.append("g").attr("transform", "translate(50, 30)").call(y_axis);
+        var xAxisTranslate = height / 2 + 30;
+        svg
+          .append("g")
+          .attr("transform", "translate(50, " + xAxisTranslate + ")")
+          .call(x_axis);
+        const cy = svg
+          .append("g")
+          .attr("transform", "translate(350, 30)")
+          .attr("stroke", "blue")
+          .call(cy_axis);
+        cy.select(".domain").attr("stroke", "blue").attr("opacity", ".6");
+        cy.selectAll("line").attr("stroke", "blue").attr("opacity", ".6");
+        //   .attr("fill", "blue")
+        const cx = svg
+          .append("g")
+          .attr("transform", "translate(50, 30)")
+          .attr("stroke", "blue")
+          .call(cx_axis);
+        cx.select(".domain").attr("stroke", "blue").attr("opacity", ".6");
+        cx.selectAll("line").attr("stroke", "blue").attr("opacity", ".6");
+      };
+
+      const task21 = async (path) => {
+        const processData = [];
+        await d3.csv(path, function (data) {
+          processData.push(data);
+        });
+
+        const width = 500;
+        const barHeight = 20;
+        const margin = 1;
+        var scale = d3
+          .scaleLinear()
+          .domain([0, d3.max(processData, (d) => d.age)])
+          .range([50, 500]);
+        var svg = d3
+          .select("#task21")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", barHeight * processData.length);
+
+        var g = svg
+          .selectAll("g")
+          .data(processData)
+          .enter()
+          .append("g")
+          .attr("transform", function (d, i) {
+            return "translate(20," + i * barHeight + ")";
+          });
+
+        // draw the bar chart
+        g.append("rect")
+          .attr("width", function (d) {
+            return scale(d.age);
+          })
+          .attr("fill", function (d) {
+            if (d.age < 25) {
+              return "green";
+            } else if (d.age > 40) {
+              return "red";
+            }
+            return "blue";
+          })
+          .attr("height", barHeight - margin);
+        g.append("text")
+          .attr("x", function (d) {
+            return scale(d.age);
+          })
+          .attr("y", barHeight / 2)
+          .attr("dy", ".35em")
+          .style("text-anchor", "end")
+          .text(function (d) {
+            return d.age;
+          });
+        const height = 300;
+
+        var xscale = d3
+          .scaleLinear()
+          .domain([0, d3.max(processData, (d) => d.age)])
+          .range([0, width - 100]);
+
+        var yscale = d3
+          .scaleLinear()
+          .domain([0, d3.max(processData, (d) => d.age)])
+          .range([barHeight * processData.length, 0]);
+        var x_axis = d3.axisBottom().scale(xscale);
+        var y_axis = d3.axisLeft().scale(yscale);
+        svg.append("g").attr("transform", "translate(20, 0)").call(y_axis);
+        var xAxisTranslate = barHeight + 55;
+        svg
+          .append("g")
+          .attr("transform", "translate(20, " + xAxisTranslate + ")")
+          .call(x_axis);
+      };
+
+      const task22 = (data, element = "body") => {
+        // Set Dimensions
+        const xSize = 600;
+        const ySize = 600;
+        const margin = 40;
+        const xMax = xSize - margin * 2;
+        const yMax = ySize - margin * 2;
+        // Get the 'limits'(min and max of array) of the data - the full extent (mins and max)
+        // so the plotted data fits perfectly
+        const xExtent = d3.extent(data, (d) => {
+          return d.x;
+        });
+        const yExtent = d3.extent(data, (d) => {
+          return d.y;
+        });
+        // Append SVG Object to the Page
+        const svg = d3
+          .select(element)
+          .append("svg")
+          .attr("width", xSize)
+          .attr("height", ySize)
+          .append("g")
+          .attr("transform", "translate(" + margin + "," + margin + ")");
+        // X Axis
+        const x = d3
+          .scaleLinear()
+          .domain([xExtent[0], xExtent[1]])
+          .range([0, xMax]);
+        // bottom
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + yMax + ")")
+          .call(d3.axisBottom(x))
+          .attr("color", "green"); // make bottom axis green
+        // top
+        svg.append("g").call(d3.axisTop(x));
+        // Y Axis
+        const y = d3
+          .scaleLinear()
+          .domain([yExtent[0], yExtent[1]])
+          .range([yMax, 0]);
+        // left y axis
+        svg.append("g").call(d3.axisLeft(y));
+        // right y axis
+        svg
+          .append("g")
+          .attr("transform", `translate(${yMax},0)`)
+          .call(d3.axisRight(y));
+        // Add the line
+        svg
+          .append("path")
+          .datum(data)
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            console.log(d);
+            if (d.type === "sin") {
+              return "green";
+            } else if (d.type === "cos") {
+              return "blue";
+            } else {
+              return "steelblue";
+            }
+          })
+          .attr("stroke-width", 1.5)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x(function (d) {
+                return x(d.x);
+              })
+              .y(function (d) {
+                return y(d.y);
+              })
+          );
+      };
+
+      const task23 = async (path) => {
+        const processData = [];
+        await d3.csv(path, function (data) {
+          processData.push(data);
+        });
+        console.log(processData);
+        task22(processData);
+      };
+
+      const task24 = () => {
+        // Create Random Points
+        const numPoints = 100;
+        const sineData = [];
+        const cosData = [];
+        for (let i = 0; i < numPoints; i++) {
+          // push those points to a data set(array)
+          sineData.push({
+            type: "sin",
+            x: i / 100,
+            y: Math.sin((6.2 * i) / 100),
+          });
+          cosData.push({
+            type: "cos",
+            x: i / 100,
+            y: Math.cos((6.2 * i) / 100),
+          });
+          // sineData.push({ x: i / 100, y: Math.tan((6.2 * i) / 100) });
+        }
+        // Set Dimensions
+        const xSize = 600;
+        const ySize = 600;
+        const margin = 40;
+        const xMax = xSize - margin * 2;
+        const yMax = ySize - margin * 2;
+        // Get the 'limits'(min and max of array) of the data - the full extent (mins and max)
+        // so the plotted data fits perfectly
+        const xExtent = d3.extent(sineData, (d) => {
+          return d.x;
+        });
+        const yExtent = d3.extent(sineData, (d) => {
+          return d.y;
+        });
+        // Append SVG Object to the Page
+        const svg = d3
+          .select("#task24")
+          .append("svg")
+          .attr("width", xSize)
+          .attr("height", ySize)
+          .append("g")
+          .attr("transform", "translate(" + margin + "," + margin + ")");
+        // X Axis
+        const x = d3
+          .scaleLinear()
+          .domain([xExtent[0], xExtent[1]])
+          .range([0, xMax]);
+        // bottom
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + yMax + ")")
+          .call(d3.axisBottom(x))
+          .attr("color", "green"); // make bottom axis green
+        // top
+        svg.append("g").call(d3.axisTop(x));
+        // Y Axis
+        const y = d3
+          .scaleLinear()
+          .domain([yExtent[0], yExtent[1]])
+          .range([yMax, 0]);
+        // left y axis
+        svg.append("g").call(d3.axisLeft(y));
+        // right y axis
+        svg
+          .append("g")
+          .attr("transform", `translate(${yMax},0)`)
+          .call(d3.axisRight(y));
+        // Add the line
+        svg
+          .append("path")
+          .datum(cosData)
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            return "steelblue";
+          })
+          .attr("stroke-width", 1.5)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x(function (d) {
+                return x(d.x);
+              })
+              .y(function (d) {
+                return y(d.y);
+              })
+          );
+        // sine graph
+        svg
+          .append("path")
+          .datum(sineData)
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            return "green";
+          })
+          .attr("stroke-width", 1.5)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x(function (d) {
+                return x(d.x);
+              })
+              .y(function (d) {
+                return y(d.y);
+              })
+          );
+
+        //task 25
+        svg
+          .selectAll("dot")
+          .data(sineData)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) {
+            return x(d.x);
+          })
+          .attr("cy", function (d) {
+            return y(d.y);
+          })
+          .attr("r", 5)
+          .style("fill", "red");
+      };
+
+      const task26 = () => {
+        // Create Random Points
+        const numPoints = 100;
+        const sineData = [];
+        const cosData = [];
+        for (let i = 0; i < numPoints; i++) {
+          // push those points to a data set(array)
+          sineData.push({
+            type: "sin",
+            x: i / 100,
+            y: Math.sin((6.2 * i) / 100),
+          });
+          cosData.push({
+            type: "cos",
+            x: i / 100,
+            y: Math.cos((6.2 * i) / 100),
+          });
+          // sineData.push({ x: i / 100, y: Math.tan((6.2 * i) / 100) });
+        }
+        // Set Dimensions
+        const xSize = 600;
+        const ySize = 600;
+        const margin = 40;
+        const xMax = xSize - margin * 2;
+        const yMax = ySize - margin * 2;
+        // Get the 'limits'(min and max of array) of the data - the full extent (mins and max)
+        // so the plotted data fits perfectly
+        const xExtent = d3.extent(sineData, (d) => {
+          return d.x;
+        });
+        const yExtent = d3.extent(sineData, (d) => {
+          return d.y;
+        });
+        // Append SVG Object to the Page
+        const svg = d3
+          .select("#task24")
+          .append("svg")
+          .attr("width", xSize)
+          .attr("height", ySize)
+          .append("g")
+          .attr("transform", "translate(" + margin + "," + margin + ")");
+        // X Axis
+        const x = d3
+          .scaleLinear()
+          .domain([xExtent[0], xExtent[1]])
+          .range([0, xMax]);
+        // bottom
+        svg
+          .append("g")
+          .attr("transform", "translate(0," + yMax + ")")
+          .call(d3.axisBottom(x))
+          .attr("color", "green"); // make bottom axis green
+        // top
+        svg.append("g").call(d3.axisTop(x));
+        // Y Axis
+        const y = d3
+          .scaleLinear()
+          .domain([yExtent[0], yExtent[1]])
+          .range([yMax, 0]);
+        // left y axis
+        svg.append("g").call(d3.axisLeft(y));
+        // right y axis
+        svg
+          .append("g")
+          .attr("transform", `translate(${yMax},0)`)
+          .call(d3.axisRight(y));
+
+        // Add the line
+        svg
+          .append("path")
+          .datum(cosData)
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            return "steelblue";
+          })
+          .attr("stroke-width", 1.5)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x(function (d) {
+                return x(d.x);
+              })
+              .y(function (d) {
+                return y(d.y);
+              })
+          );
+        // sine graph
+        svg
+          .append("path")
+          .datum(sineData)
+          .attr("fill", "none")
+          .attr("stroke", function (d) {
+            return "green";
+          })
+          .attr("stroke-width", 1.5)
+          .attr(
+            "d",
+            d3
+              .line()
+              .x(function (d) {
+                return x(d.x);
+              })
+              .y(function (d) {
+                return y(d.y);
+              })
+          );
+
+        //make points circle
+        svg
+          .selectAll("dot")
+          .data(sineData)
+          .enter()
+          .append("circle")
+          .attr("cx", function (d) {
+            return x(d.x);
+          })
+          .attr("cy", function (d) {
+            return y(d.y);
+          })
+          .attr("r", 5)
+          .style("fill", "red");
+
+        // Draw triangle
+        var sym = d3.symbol().type(d3.symbolTriangle).size(100);
+
+        //make points triangle
+        svg
+          .selectAll("dot")
+          .data(cosData)
+          .enter()
+          .append("path")
+          .attr("d", sym)
+          .attr("stroke", "green")
+          .attr("transform", function (d) {
+            return "translate(" + x(d.x) + "," + y(d.y) + ")";
+          })
+          .style("fill", "green");
+
+        svg
+          .selectAll("dot")
+          .data(sineData)
+          .enter()
+          .append("text")
+          .attr("x", function (d) {
+            return x(d.x);
+          })
+          .attr("y", function (d) {
+            return y(d.y);
+          })
+          .attr("dy", ".35em")
+          .text(function (d) {
+            if ((d.x * 100) % 2) {
+              return d.x;
+            }
+          });
+      };
+
+      task1();
+      task2();
+      task3();
+      task4();
+      task5();
+      task6();
+      task7();
+      task8();
+      task9();
+      task10();
+      task11();
+      task12();
+      task14();
+      task16();
+      task17();
+      task18("../data/task18.csv"); // task 18 and 19
+      task20();
+      task21("../data/task18.csv");
+
+      // Create Random Points
+      const numPoints = 100;
+      const sineData = [];
+      for (let i = 0; i < numPoints; i++) {
+        // push those points to a data set(array)
+        sineData.push({ x: i / 100, y: Math.sin((6.2 * i) / 100) });
+        // sineData.push({ x: i / 100, y: Math.cos((6.2 * i) / 100) });
+        // sineData.push({ x: i / 100, y: Math.tan((6.2 * i) / 100) });
+      }
+      task22(sineData);
+      task23("../data/task22.csv");
+      task24(); // task 24 and task 25
+      task26(); // task 26 and 27
+    </script>
+  </body>
+</html>

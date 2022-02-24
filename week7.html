@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week 7</title>
+  </head>
+  <body>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+
+    <script>
+      // Note: Run on a live server
+      const data = {
+        name: "A",
+        size: 1,
+        children: [
+          { name: "B", size: 2 },
+          {
+            name: "C",
+            size: 3,
+            children: [
+              { name: "E", size: 5 },
+              { name: "F", size: 6 },
+            ],
+          },
+          {
+            name: "D",
+            size: 4,
+            children: [
+              { name: "G", size: 2 },
+              {
+                name: "H",
+                size: 3,
+                children: [
+                  { name: "J", size: 5 },
+                  { name: "K", size: 6 },
+                ],
+              },
+              { name: "I", size: 4 },
+            ],
+          },
+        ],
+      };
+
+      const printHierarchy = (data) => {
+        // build hierarchy
+        const root = d3.hierarchy(data);
+
+        // how many elements are in the hierarchy
+        const count = root.descendants().length;
+        console.log("count:", count);
+
+        // node.each traverses the tree from that node, repeatedly calling a function on each descendant node.
+        root.each((d) => {
+          console.log("depth:", d.depth, " name:", d.data.name);
+        });
+      };
+
+      const readDataFromJson = async (path) => {
+        return d3.json(path, function (data) {
+          return data;
+        });
+      };
+
+      const isDataValid = (data) => {
+        if (typeof data !== "object") return false;
+        return Object.keys(data).length > 1;
+      };
+
+      const task1 = (data) => {
+        if (!isDataValid(data))
+          throw new TypeError("Data must be valid and can not be empty");
+        console.log("Task 1");
+        printHierarchy(data);
+      };
+
+      const task2 = async (path) => {
+        const data = await readDataFromJson(path);
+        if (!isDataValid(data))
+          throw new TypeError("Data must be valid and can not be empty");
+        console.log("Task 2");
+        printHierarchy(data);
+      };
+
+      // solution to task 1
+      task1(data);
+
+      console.log(" ");
+      // solution to task 2
+      task2("/data/week7.json");
+    </script>
+  </body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Week 8</title>
+    <style>
+      circle {
+        fill: rgb(31, 119, 180);
+        fill-opacity: 0.25;
+        stroke: rgb(31, 119, 180);
+        stroke-width: 1px;
+      }
+
+      .leaf circle {
+        fill: #ff7f0e;
+        fill-opacity: 1;
+      }
+
+      .purple circle {
+        fill: purple;
+        fill-opacity: 1;
+      }
+
+      .blue circle {
+        fill: blue;
+        fill-opacity: 1;
+      }
+
+      text {
+        font: 10px sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas1"></div>
+    <div id="canvas2"></div>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/awaisathar/lda.js/gh-pages/js/stopwords.js"></script>
+    <script src="https://cdn.rawgit.com/awaisathar/lda.js/gh-pages/js/lda.js"></script>
+
+    <script>
+      // Example document.
+      var text =
+        "Cats are small. Dogs are big. Lions are bigger. Cats like to chase mice. Dogs like to eat bones. Lions like to eat Dogs.";
+
+      const getLDATopic = (documents, vocab) => {
+        // Run LDA to get terms for 2 topics
+        var V = vocab.length;
+        var M = documents.length;
+        var K = 2; // number of topics
+        var alpha = 0.1; // per-document distributions over topics
+        var beta = 0.01; // per-topic distributions over words
+
+        lda.configure(documents, V, 10000, 2000, 100, 10);
+        lda.gibbs(K, alpha, beta);
+
+        var theta = lda.getTheta();
+        var phi = lda.getPhi();
+
+        console.log("number of topics:", phi.length);
+
+        // build topic word lists
+        let topics = [];
+        let d3Json = { name: "Dictionary", children: [] };
+        //topics
+        var topTerms = 20; // max topics
+        var topicText = new Array();
+        for (var k = 0; k < phi.length; k++) {
+          var tuples = new Array();
+          for (var w = 0; w < phi[k].length; w++) {
+            tuples.push("" + phi[k][w].toPrecision(2) + "_" + vocab[w]);
+          }
+
+          tuples.sort().reverse();
+          if (topTerms > vocab.length) topTerms = vocab.length;
+
+          d3Json.children.push({ name: `topic${k}`, children: [] });
+          for (var t = 0; t < topTerms; t++) {
+            var topicTerm = tuples[t].split("_")[1];
+            var prob = parseInt(tuples[t].split("_")[0] * 100);
+            if (prob < 0.0001) continue;
+
+            if (topics[k] == undefined) topics[k] = [];
+            topics[k].push(topicTerm);
+            if (d3Json.children[k] == undefined) d3Json.children[k] = [];
+            d3Json.children[k].children.push({ name: topicTerm, size: prob });
+          }
+        }
+
+        console.log("topics:", topics);
+        return { topics, prob, d3Json };
+      };
+
+      const getTextLDAValues = (text) => {
+        // Extract sentences and builds vocab
+        var documents = new Array();
+        var sentences = [text];
+        var f = {};
+        var vocab = new Array();
+        var docCount = 0;
+
+        for (var i = 0; i < sentences.length; i++) {
+          // end loop if sentence is empty string
+          if (sentences[i] == "") continue;
+
+          //convert to array of each word
+          var words = sentences[i].split(/[\s,\"]+/);
+          if (!words) continue;
+
+          var wordIndices = new Array();
+
+          //loop through words
+          for (var wc = 0; wc < words.length; wc++) {
+            // convert each word to lowercase and a valid format alphanumeric format
+            var w = words[wc].toLowerCase().replace(/[^a-z\'A-Z0-9 ]+/g, "");
+            //TODO: Add stemming
+
+            // if word is not valid
+            if (
+              w == "" ||
+              w.length == 1 ||
+              stopwords[w] ||
+              w.indexOf("http") == 0
+            )
+              continue;
+
+            //if word(key) exist in hash table add count to value
+            if (f[w]) {
+              f[w] = f[w] + 1;
+            } else if (w) {
+              // add new word to hash table with 1 count
+              f[w] = 1;
+              // add new word to vocab
+              vocab.push(w);
+            }
+            // add index of word in vocab to array
+            wordIndices.push(vocab.indexOf(w));
+          }
+          // if wordIndices is not empty add wordIndices to documents
+          if (wordIndices && wordIndices.length > 0) {
+            documents[docCount++] = wordIndices;
+          }
+        }
+
+        return { documents, vocab };
+      };
+
+      const readDataFromText = async (path) => {
+        return d3.text(path, function (data) {
+          return data;
+        });
+      };
+
+      // D3
+      const supportedColors = ["blue", "leaf", "purple"];
+
+      const getRandomValue = (arr) => {
+        const random = Math.floor(Math.random() * arr.length);
+        return arr[random];
+      };
+
+      const d3Data = {
+        name: "flare",
+        children: [
+          {
+            name: "analytics",
+            children: [
+              {
+                name: "cluster",
+                children: [
+                  { name: "AgglomerativeCluster", size: 6938 },
+                  { name: "CommunityStructure", size: 2812 },
+                  { name: "HierarchicalCluster", size: 3714 },
+                  { name: "MergeEdge", size: 743 },
+                ],
+              },
+              {
+                name: "cluster2",
+                children: [
+                  { name: "AgglomerativeCluster", size: 6938 },
+                  { name: "CommunityStructure", size: 2812 },
+                  { name: "HierarchicalCluster", size: 3714 },
+                  { name: "MergeEdge", size: 743 },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      const drawCanvas = (json, element, width = 300, height = 300) => {
+        var w = width;
+        var h = height;
+
+        var pack = d3
+          .pack()
+          .size([w - 4, h - 4])
+          .padding(2);
+
+        var svg = d3
+          .select(element)
+          .append("svg")
+          .attr("width", w)
+          .attr("height", h);
+
+        var root = d3
+          .hierarchy(json)
+          .sum(function (d) {
+            return d.size;
+          })
+          .sort(function (a, b) {
+            return b.size - a.size;
+          });
+
+        let g = svg.append("g");
+
+        var node = g
+          .selectAll(".node")
+          .data(pack(root).descendants())
+          .enter()
+          .append("g")
+          .attr("class", function (d) {
+            return d.children
+              ? "node"
+              : `${getRandomValue(supportedColors)} node`;
+          })
+          .attr("transform", function (d) {
+            return "translate(" + d.x + "," + d.y + ")";
+          });
+
+        node.append("circle").attr("r", function (d) {
+          return d.r;
+        });
+
+        node
+          .filter(function (d) {
+            return !d.children;
+          })
+          .append("text")
+          .attr("dy", "0.3em")
+          .text(function (d) {
+            return d.data.name.substring(0, d.r / 3);
+          });
+      };
+
+      const task1 = (text) => {
+        console.log("Task 1");
+        const values = getTextLDAValues(text);
+        getLDATopic(values.documents, values.vocab);
+      };
+
+      const task2 = async () => {
+        console.log("Task 2");
+        const text = await readDataFromText("/data/week8.txt");
+        const values = getTextLDAValues(text);
+        getLDATopic(values.documents, values.vocab);
+      };
+
+      const task4 = async () => {
+        console.log("Task 4");
+        const text = await readDataFromText("/data/week8.txt");
+        const values = getTextLDAValues(text);
+        const { d3Json } = getLDATopic(values.documents, values.vocab);
+
+        drawCanvas(d3Json, "#canvas2", 600, 600);
+      };
+
+      // task 1
+      task1(text);
+
+      // task 2
+      console.log(" ");
+      task2(text);
+
+      // task 3
+      console.log(" ");
+      drawCanvas(d3Data, "#canvas1");
+
+      // task 4
+      console.log(" ");
+      task4();
+    </script>
+  </body>
+</html>
